@@ -69,7 +69,7 @@ def pair_to_tuple(raw):
 
 def parse_remote_code(code=None, one=None, zero=None, bits=32):
     if not all((code, one, zero)):
-        raise Exception("fuck you")
+        raise Exception("oh you")
     name = code[0]
     bit_string = "{:b}".format(int(code[1], 16))
     if len(bit_string) > bits:
