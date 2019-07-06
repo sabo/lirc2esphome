@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import sys
 from math import copysign
 from yaml import dump, load
@@ -72,7 +73,7 @@ def parse_remote_code(code=None, one=None, zero=None, bits=32):
         raise Exception("oh you")
     name = code[0]
     bit_string = "{:b}".format(int(code[1], 16))
-    if len(bit_string) > bits:
+    if len(bit_string) < bits:
         # Pad it out with zeros on the left
         bit_string = ("0" * (bits - len(bit_string))) + bit_string
     translated_code = [one if b == '1' else zero for b in bit_string]
@@ -95,7 +96,7 @@ def parse_lines(sections):
 
     # Get ptrail and gap
     ptrail = [int(sections['meta']['ptrail'][0])]
-    gap = [int(sections['meta']['gap'][0])]
+    gap = [-int(sections['meta']['gap'][0])]
 
     # Name
     name = sections['meta']['name'][0]
@@ -142,4 +143,14 @@ def add_to_esp_file(filename, switches, out_name):
         esp_file['switch'] = switches
     with open(out_name, 'w') as f:
         dump(esp_file, f, default_flow_style=None)
+
+if __name__ == "__main__":
+    in_file = sys.argv[1]
+    codes_file = sys.argv[2]
+    out_file = sys.argv[3]
+
+    tokens = tokenize(codes_file)
+    codes = parse_lines(tokens)
+    commands = esphomeificate(codes, frequency="38000Hz")
+    add_to_esp_file(in_file, commands, out_file)
 
